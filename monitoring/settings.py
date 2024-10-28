@@ -11,10 +11,15 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import configparser
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Read configuration from the file
+cp = configparser.ConfigParser()
+file_path = os.path.join(BASE_DIR, 'conf', 'common.cfg')
+cp.read(file_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -25,7 +30,7 @@ SECRET_KEY = 'ge^fd9rf)htmxji8kf=jk8frh3=^11@^n=h14gu*fqt^0-lnr$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = cp.get('common', 'allowed_hosts').split(',')
 
 
 # Application definition
@@ -91,20 +96,20 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
     'grid': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '',
-        'PORT': '3306',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
+        'ENGINE': cp.get('db', 'backend_grid'),
+        'HOST': cp.get('db', 'hostname_grid'),
+        'PORT': cp.get('db', 'port_grid'),
+        'NAME': cp.get('db', 'name_grid'),
+        'USER': cp.get('db', 'username_grid'),
+        'PASSWORD': cp.get('db', 'password_grid'),
     },
     'cloud': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '',
-        'PORT': '3306',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
+        'ENGINE': cp.get('db', 'backend_cloud'),
+        'HOST': cp.get('db', 'hostname_cloud'),
+        'PORT': cp.get('db', 'port_cloud'),
+        'NAME': cp.get('db', 'name_cloud'),
+        'USER': cp.get('db', 'username_cloud'),
+        'PASSWORD': cp.get('db', 'password_cloud'),
     },
 }
 
