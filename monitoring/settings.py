@@ -31,10 +31,6 @@ try:
     # Read configuration from the file
     cp = configparser.ConfigParser()
     file_path = os.path.join(BASE_DIR, 'monitoring', 'settings.ini')
-
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f'Configuration file NOT found: %s' % file_path)
-
     cp.read(file_path)
 
     ALLOWED_HOSTS = cp.get('common', 'allowed_hosts').split(',')
@@ -47,24 +43,24 @@ try:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         },
         'grid': {
-            'ENGINE': cp.get('db grid', 'backend'),
-            'HOST': cp.get('db grid', 'hostname'),
-            'PORT': cp.get('db grid', 'port'),
-            'NAME': cp.get('db grid', 'name'),
-            'USER': cp.get('db grid', 'username'),
-            'PASSWORD': cp.get('db grid', 'password'),
+            'ENGINE': cp.get('db_grid', 'backend'),
+            'HOST': cp.get('db_grid', 'hostname'),
+            'PORT': cp.get('db_grid', 'port'),
+            'NAME': cp.get('db_grid', 'name'),
+            'USER': cp.get('db_grid', 'username'),
+            'PASSWORD': cp.get('db_grid', 'password'),
         },
         'cloud': {
-            'ENGINE': cp.get('db cloud', 'backend'),
-            'HOST': cp.get('db cloud', 'hostname'),
-            'PORT': cp.get('db cloud', 'port'),
-            'NAME': cp.get('db cloud', 'name'),
-            'USER': cp.get('db cloud', 'username'),
-            'PASSWORD': cp.get('db cloud', 'password'),
+            'ENGINE': cp.get('db_cloud', 'backend'),
+            'HOST': cp.get('db_cloud', 'hostname'),
+            'PORT': cp.get('db_cloud', 'port'),
+            'NAME': cp.get('db_cloud', 'name'),
+            'USER': cp.get('db_cloud', 'username'),
+            'PASSWORD': cp.get('db_cloud', 'password'),
         },
     }
 
-except (OSError, configparser.Error) as err:
+except (configparser.NoSectionError) as err:
     print("Error in configuration file: %s" % err)
     sys.exit(1)
 
