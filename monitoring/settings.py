@@ -10,11 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+import configparser
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -25,8 +26,43 @@ SECRET_KEY = 'ge^fd9rf)htmxji8kf=jk8frh3=^11@^n=h14gu*fqt^0-lnr$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+try:
 
+    # Read configuration from the file
+    cp = configparser.ConfigParser()
+    file_path = os.path.join(BASE_DIR, 'monitoring', 'settings.ini')
+    cp.read(file_path)
+
+    ALLOWED_HOSTS = cp.get('common', 'allowed_hosts').split(',')
+
+    # Database
+    # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        },
+        'grid': {
+            'ENGINE': cp.get('db_grid', 'backend'),
+            'HOST': cp.get('db_grid', 'hostname'),
+            'PORT': cp.get('db_grid', 'port'),
+            'NAME': cp.get('db_grid', 'name'),
+            'USER': cp.get('db_grid', 'username'),
+            'PASSWORD': cp.get('db_grid', 'password'),
+        },
+        'cloud': {
+            'ENGINE': cp.get('db_cloud', 'backend'),
+            'HOST': cp.get('db_cloud', 'hostname'),
+            'PORT': cp.get('db_cloud', 'port'),
+            'NAME': cp.get('db_cloud', 'name'),
+            'USER': cp.get('db_cloud', 'username'),
+            'PASSWORD': cp.get('db_cloud', 'password'),
+        },
+    }
+
+except (configparser.NoSectionError) as err:
+    print("Error in configuration file. Check that file exists first: %s" % err)
+    sys.exit(1)
 
 # Application definition
 
@@ -80,33 +116,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'monitoring.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    },
-    'grid': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '',
-        'PORT': '3306',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-    },
-    'cloud': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '',
-        'PORT': '3306',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-    },
-}
 
 
 # Password validation
