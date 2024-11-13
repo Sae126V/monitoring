@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
 import configparser
+import os
 import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -61,7 +61,7 @@ try:
     }
 
 except (configparser.NoSectionError) as err:
-    print("Error in configuration file: %s" % err)
+    print("Error in configuration file. Check that file exists first: %s" % err)
     sys.exit(1)
 
 # Application definition
