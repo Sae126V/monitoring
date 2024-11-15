@@ -19,5 +19,5 @@ Within venv, the following are installed through pip:
 
 Note that when the version of the packages is specified, the app would not work with a different version (due to dependencies conflicts).
 
-Is is also important to note that different types of OS require different packages to be installed. 
+Is is also important to note that different types of OS require different packages to be installed.
 The above are the packages that allow the app to work on a Rocky8.
