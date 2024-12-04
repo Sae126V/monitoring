@@ -18,10 +18,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ge^fd9rf)htmxji8kf=jk8frh3=^11@^n=h14gu*fqt^0-lnr$'
+# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -32,6 +29,9 @@ try:
     cp = configparser.ConfigParser()
     file_path = os.path.join(BASE_DIR, 'monitoring', 'settings.ini')
     cp.read(file_path)
+
+    # SECURITY WARNING: keep the secret key used in production secret!
+    SECRET_KEY = cp.get('common', 'secret_key')
 
     ALLOWED_HOSTS = cp.get('common', 'allowed_hosts').split(',')
 
