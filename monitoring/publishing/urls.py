@@ -11,12 +11,12 @@ router.register(r'gridsync', views.GridSiteSyncSubmitHViewSet)
 
 urlpatterns = [
     re_path(
-        r'^gridsync/(?P<SiteName>[a-zA-Z0-9-]+)/$',
+        r'^gridsync/(?P<SiteName>[a-zA-Z0-9.-]+)/$',
         views.GridSiteSyncViewSet.as_view({'get': 'retrieve'}),
         name='gridsync_singlesite'
     ),
     re_path(
-        r'^gridsync/(?P<SiteName>[a-zA-Z0-9-]+)/(?P<YearMonth>[0-9-]+)/$',
+        r'^gridsync/(?P<SiteName>[a-zA-Z0-9.-]+)/(?P<YearMonth>[0-9-]+)/$',
         views.GridSiteSyncSubmitHViewSet.as_view({'get': 'retrieve'}),
         name='gridsync_submithost'
     ),
