@@ -7,7 +7,6 @@ router = routers.SimpleRouter()
 router.register(r'cloud', views.CloudSiteViewSet)
 router.register(r'grid', views.GridSiteViewSet)
 router.register(r'gridsync', views.GridSiteSyncViewSet)
-router.register(r'gridsync', views.GridSiteSyncSubmitHViewSet)
 
 urlpatterns = [
     re_path(
@@ -23,7 +22,7 @@ urlpatterns = [
     re_path(
         r'^gridsync/(?P<SiteName>[a-zA-Z0-9.-]+)/$',
         views.GridSiteSyncViewSet.as_view({'get': 'retrieve'}),
-        name='gridsync_singlesite'
+        name='gridsitesync-detail'
     ),
     re_path(
         r'^gridsync/(?P<SiteName>[a-zA-Z0-9.-]+)/(?P<YearMonth>[0-9-]+)/$',

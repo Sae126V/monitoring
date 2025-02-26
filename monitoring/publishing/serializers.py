@@ -49,7 +49,7 @@ class GridSiteSyncSerializer(serializers.HyperlinkedModelSerializer):
         # Sitename substitutes pk
         lookup_field = 'SiteName'
         extra_kwargs = {
-            'url': {'lookup_field': 'SiteName'}
+            'url': {'view_name': 'gridsitesync-detail', 'lookup_field': 'SiteName'}
         }
 
 

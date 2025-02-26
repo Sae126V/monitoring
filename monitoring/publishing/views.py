@@ -9,6 +9,7 @@ import pandas as pd
 
 from rest_framework import viewsets, generics
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
 
 from monitoring.publishing.models import (
     GridSite,
@@ -399,12 +400,14 @@ class GridSiteSyncViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             print('No need to update')
 
-        response = super(GridSiteSyncViewSet, self).list(request)
-        response.data = {
-            'records': response.data,
+        sites_list_qs = GridSiteSync.objects.filter(SiteName=SiteName)
+        sites_list_serializer = self.get_serializer(sites_list_qs, many=True)
+        
+        response = {
+            'records': sites_list_serializer.data,
             'last_fetched': last_fetched
         }
-        return response
+        return Response(response)
 
 
 # Needed for passing two parameters to a viewset (GridSiteSyncSubmitHViewSet)
