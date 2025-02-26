@@ -11,6 +11,16 @@ router.register(r'gridsync', views.GridSiteSyncSubmitHViewSet)
 
 urlpatterns = [
     re_path(
+        r'^cloud/(?P<SiteName>[a-zA-Z0-9.-]+)/$',
+        views.CloudSiteViewSet.as_view({'get': 'retrieve'}),
+        name='cloudsite-detail'
+    ),
+    re_path(
+        r'^grid/(?P<SiteName>[a-zA-Z0-9.-]+)/$',
+        views.GridSiteViewSet.as_view({'get': 'retrieve'}),
+        name='gridsite-detail'
+    ),
+    re_path(
         r'^gridsync/(?P<SiteName>[a-zA-Z0-9.-]+)/$',
         views.GridSiteSyncViewSet.as_view({'get': 'retrieve'}),
         name='gridsync_singlesite'

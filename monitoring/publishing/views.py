@@ -127,6 +127,7 @@ class GridSiteViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = GridSite.objects.all()
     serializer_class = GridSiteSerializer
     template_name = 'gridsites.html'
+    lookup_field = 'SiteName'
 
     def list(self, request):
         last_fetched = GridSite.objects.aggregate(Max('fetched'))['fetched__max']
@@ -166,7 +167,7 @@ class GridSiteViewSet(viewsets.ReadOnlyModelViewSet):
 
         return response
 
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, SiteName=None):
         last_fetched = GridSite.objects.aggregate(Max('fetched'))['fetched__max']
         # If there's no data then last_fetched is None.
         if last_fetched is not None:
@@ -178,7 +179,6 @@ class GridSiteViewSet(viewsets.ReadOnlyModelViewSet):
                     Site,
                     max(LatestEndTime) AS LatestPublish
                 FROM VSuperSummaries
-                WHERE Year=2019
                 GROUP BY 1;
             """
             fetchset = VSuperSummaries.objects.using('grid').raw(sql_query)
@@ -313,7 +313,6 @@ class GridSiteSyncViewSet(viewsets.ReadOnlyModelViewSet):
         return response
 
     def retrieve(self, request, SiteName=None):
-        lookup_field = 'SiteName'
         last_fetched = GridSiteSync.objects.aggregate(Max('fetched'))['fetched__max']
         row_1 = GridSiteSync.objects.filter()[:1].get()
         n_sites = GridSiteSync.objects.values('SiteName').distinct().count()
@@ -549,6 +548,7 @@ class CloudSiteViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = CloudSite.objects.all()
     serializer_class = CloudSiteSerializer
     template_name = 'cloudsites.html'
+    lookup_field = 'SiteName'
 
     def list(self, request):
         last_fetched = CloudSite.objects.aggregate(Max('fetched'))['fetched__max']
@@ -600,7 +600,7 @@ class CloudSiteViewSet(viewsets.ReadOnlyModelViewSet):
             }
         return response
 
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, SiteName=None):
         last_fetched = CloudSite.objects.aggregate(Max('fetched'))['fetched__max']
         print(last_fetched.replace(tzinfo=None), datetime.today() - timedelta(hours=1, seconds=20))
         if last_fetched.replace(tzinfo=None) < (datetime.today() - timedelta(hours=1, seconds=20)):
