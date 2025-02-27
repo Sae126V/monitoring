@@ -27,7 +27,7 @@ urlpatterns = [
     re_path(
         r'^gridsync/(?P<SiteName>[a-zA-Z0-9.-]+)/(?P<YearMonth>[0-9-]+)/$',
         views.GridSiteSyncSubmitHViewSet.as_view({'get': 'retrieve'}),
-        name='gridsync_submithost'
+        name='gridsync-submithost'
     ),
 ]
 

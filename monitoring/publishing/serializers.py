@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from rest_framework.reverse import reverse
 from monitoring.publishing.models import (
     CloudSite,
     GridSite,
@@ -80,6 +80,26 @@ class GridSiteSyncSubmitHSerializer(serializers.HyperlinkedModelSerializer):
     # ouput format. Encoding will be determined by the renderer and can be
     # formatted by a template filter.
 
+    # We need this because HyperlinkedModelSerializer seems to NOT able to work with two lookup_fields
+    class MultipleFieldLookup(serializers.HyperlinkedIdentityField):
+        # To match or construct the absolute URL based on the `SiteName` and `YearMonth`
+        def get_url(self, obj, view_name, request, format):
+            if not obj.SiteName or not obj.YearMonth:
+                return None
+
+            return request.build_absolute_uri(
+                reverse(
+                    view_name,
+                    kwargs={
+                        'SiteName': obj.SiteName,
+                        'YearMonth': obj.YearMonth 
+                    },
+                    request=request,
+                    format=format
+                ))
+
+    url = MultipleFieldLookup(view_name='gridsync-submithost')
+
     class Meta:
         model = GridSiteSyncSubmitH
         fields = (
@@ -92,5 +112,3 @@ class GridSiteSyncSubmitHSerializer(serializers.HyperlinkedModelSerializer):
             'RecordCountInDb',
             'SubmitHost'
         )
-
-        lookup_fields = ('SiteName', 'YearMonth')

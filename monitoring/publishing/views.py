@@ -432,6 +432,7 @@ class GridSiteSyncSubmitHViewSet(MultipleFieldLookupMixin, viewsets.ReadOnlyMode
     queryset = GridSiteSyncSubmitH.objects.all()
     serializer_class = GridSiteSyncSubmitHSerializer
     template_name = 'gridsync_submithost.html'
+    lookup_fields = ('SiteName', 'YearMonth')
 
     def list(self, request):
         last_fetched = GridSiteSyncSubmitH.objects.aggregate(Max('fetched'))['fetched__max']
@@ -443,10 +444,8 @@ class GridSiteSyncSubmitHViewSet(MultipleFieldLookupMixin, viewsets.ReadOnlyMode
         return response
 
     def retrieve(self, request, SiteName=None, YearMonth=None):
-
-        lookup_fields = ('SiteName', 'YearMonth')
         last_fetched = GridSiteSyncSubmitH.objects.aggregate(Max('fetched'))['fetched__max']
-        Year, Month = YearMonth.replace('-', ' ').split(' ')
+        Year, Month = YearMonth.split('-')
         sitename_in_table = None
         yearmonth_in_table = None
 
@@ -516,6 +515,7 @@ class GridSiteSyncSubmitHViewSet(MultipleFieldLookupMixin, viewsets.ReadOnlyMode
                 right_on=['Site', 'Month', 'Year', 'SubmitHostSync'],
                 how='outer'
             )
+
             fetchset = df_all.to_dict('index')
 
             # This is to list only data for one month
