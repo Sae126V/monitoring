@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
 from monitoring.publishing.models import (
     CloudSite,
     GridSite,
@@ -77,29 +78,34 @@ class CloudSiteSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class MultipleFieldLookup(serializers.HyperlinkedIdentityField):
+    # HyperlinkedModelSerializer seems to NOT able to work with two lookup_fields
+    # This class is ONLY capable to match object instance to its URL representation.
+    # i.e, `SiteName` and `YearMonth` ONLY
+    #
+    # Overriding the get_url() method - To match object instance to its URL representation.
+    def get_url(self, obj, view_name, request, format):
+        if not obj.SiteName or not obj.YearMonth:
+            return None
+
+        return request.build_absolute_uri(
+            reverse(
+                view_name,
+                kwargs={
+                    'SiteName': obj.SiteName,
+                    'YearMonth': obj.YearMonth
+                },
+                request=request,
+                format=format
+            ))
+
+
 class GridSiteSyncSubmitHSerializer(serializers.HyperlinkedModelSerializer):
     # Override default format with None so that Python datetime is used as
     # ouput format. Encoding will be determined by the renderer and can be
     # formatted by a template filter.
 
-    # We need this because HyperlinkedModelSerializer seems to NOT able to work with two lookup_fields
-    class MultipleFieldLookup(serializers.HyperlinkedIdentityField):
-        # To match or construct the absolute URL based on the `SiteName` and `YearMonth`
-        def get_url(self, obj, view_name, request, format):
-            if not obj.SiteName or not obj.YearMonth:
-                return None
-
-            return request.build_absolute_uri(
-                reverse(
-                    view_name,
-                    kwargs={
-                        'SiteName': obj.SiteName,
-                        'YearMonth': obj.YearMonth
-                    },
-                    request=request,
-                    format=format
-                ))
-
+    # This helps us to match or construct the absolute URL based on the `SiteName` and `YearMonth`
     url = MultipleFieldLookup(view_name='gridsync-submithost')
 
     class Meta:
