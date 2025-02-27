@@ -402,7 +402,7 @@ class GridSiteSyncViewSet(viewsets.ReadOnlyModelViewSet):
 
         sites_list_qs = GridSiteSync.objects.filter(SiteName=SiteName)
         sites_list_serializer = self.get_serializer(sites_list_qs, many=True)
-        
+
         response = {
             'records': sites_list_serializer.data,
             'last_fetched': last_fetched

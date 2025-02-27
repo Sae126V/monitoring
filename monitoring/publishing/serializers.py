@@ -25,8 +25,9 @@ class GridSiteSerializer(serializers.HyperlinkedModelSerializer):
         # Sitename substitutes pk
         lookup_field = 'SiteName'
         extra_kwargs = {
-            'url': {'view_name': 'gridsite-detail','lookup_field': 'SiteName'}
+            'url': {'view_name': 'gridsite-detail', 'lookup_field': 'SiteName'}
         }
+
 
 class GridSiteSyncSerializer(serializers.HyperlinkedModelSerializer):
     # Override default format with None so that Python datetime is used as
@@ -75,6 +76,7 @@ class CloudSiteSerializer(serializers.HyperlinkedModelSerializer):
             'url': {'view_name': 'cloudsite-detail', 'lookup_field': 'SiteName'}
         }
 
+
 class GridSiteSyncSubmitHSerializer(serializers.HyperlinkedModelSerializer):
     # Override default format with None so that Python datetime is used as
     # ouput format. Encoding will be determined by the renderer and can be
@@ -92,7 +94,7 @@ class GridSiteSyncSubmitHSerializer(serializers.HyperlinkedModelSerializer):
                     view_name,
                     kwargs={
                         'SiteName': obj.SiteName,
-                        'YearMonth': obj.YearMonth 
+                        'YearMonth': obj.YearMonth
                     },
                     request=request,
                     format=format
