@@ -7,6 +7,7 @@ import configparser
 import logging
 import os
 import sys
+import time
 
 import django
 from django.db import DatabaseError
@@ -229,14 +230,33 @@ def refresh_gridsitesync():
 
 
 if __name__ == "__main__":
-    log.info('=====================')
+    try:
+        log.info('=====================')
+        start_time = time.time()
 
-    refresh_gridsite()
-    refresh_cloudsite()
-    refresh_gridsitesync()
+        refresh_gridsite()
+        refresh_cloudsite()
+        refresh_gridsitesync()
 
-    log.info(
-        "Data retrieval and processing attempted. "
-        "Check the above logs for details on the sync status"
-    )
-    log.info('=====================')
+    except DatabaseError as db_err:
+        log.exception(f"Database error: {db_err}")
+
+    else:
+        # Only runs if NO exception was raised in try
+        end_time = time.time()
+        elapsed = end_time - start_time
+        minutes, seconds = divmod(int(elapsed), 60)
+
+        log.info(
+            "Data retrieval and processing attempted. "
+            "Check the above logs for details on the sync status"
+        )
+
+        if minutes > 0:
+            log.info(f"Execution time: {minutes}m {seconds}s")
+        else:
+            log.info(f"Execution time: {seconds}s")
+
+    finally:
+        # Runs always, regardless of success or error
+        log.info('==========================================')
