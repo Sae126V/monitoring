@@ -10,7 +10,7 @@ import sys
 import time
 
 import django
-from django.db import DatabaseError
+from django.db import transaction, DatabaseError
 import pandas as pd
 
 
@@ -95,11 +95,12 @@ def refresh_gridsite():
         """
         fetchset = VSuperSummaries.objects.using('grid').raw(sql_query)
 
-        for f in fetchset:
-            GridSite.objects.update_or_create(
-                defaults={'updated': f.LatestPublish},
-                SiteName=f.Site
-            )
+        with transaction.atomic():
+            for f in fetchset:
+                GridSite.objects.update_or_create(
+                    defaults={'updated': f.LatestPublish},
+                    SiteName=f.Site
+                )
 
         log.info("Refreshed GridSite")
 
@@ -131,15 +132,16 @@ def refresh_cloudsite():
         """
         fetchset = VAnonCloudRecord.objects.using('cloud').raw(sql_query)
 
-        for f in fetchset:
-            CloudSite.objects.update_or_create(
-                defaults={
-                    'Vms': f.VMs,
-                    'Script': f.CloudType,
-                    'updated': f.UpdateTime
-                },
-                SiteName=f.SiteName
-            )
+        with transaction.atomic():
+            for f in fetchset:
+                CloudSite.objects.update_or_create(
+                    defaults={
+                        'Vms': f.VMs,
+                        'Script': f.CloudType,
+                        'updated': f.UpdateTime
+                    },
+                    SiteName=f.SiteName
+                )
 
         log.info("Refreshed CloudSite")
 
@@ -205,29 +207,30 @@ def refresh_gridsitesync():
         )
         fetchset = df_all.to_dict('index')
 
+ 
         # Determine SyncStatus based on the difference between records published and in db
         for f in fetchset.values():
             f['SyncStatus'] = determine_sync_status(f)
 
-            # Combined primary keys outside the default dict
-            GridSiteSync.objects.update_or_create(
-                defaults={
-                    'RecordStart': f.get("RecordStart"),
-                    'RecordEnd': f.get("RecordEnd"),
-                    'RecordCountPublished': f.get("RecordCountPublished"),
-                    'RecordCountInDb': f.get("RecordCountInDb"),
-                    'SyncStatus': f.get("SyncStatus"),
-                },
-                YearMonth=get_year_month_str(f.get("Year"), f.get("Month")),
-                SiteName=f.get("Site"),
-                Month=f.get("Month"),
-                Year=f.get("Year"),
-            )
+            with transaction.atomic():
+                # Combined primary keys outside the default dict
+                GridSiteSync.objects.update_or_create(
+                    defaults={
+                        'RecordStart': f.get("RecordStart"),
+                        'RecordEnd': f.get("RecordEnd"),
+                        'RecordCountPublished': f.get("RecordCountPublished"),
+                        'RecordCountInDb': f.get("RecordCountInDb"),
+                        'SyncStatus': f.get("SyncStatus"),
+                    },
+                    YearMonth=get_year_month_str(f.get("Year"), f.get("Month")),
+                    SiteName=f.get("Site"),
+                    Month=f.get("Month"),
+                    Year=f.get("Year"),
+                )
         log.info("Refreshed GridSiteSync")
 
     except DatabaseError:
         log.exception('Error while trying to refresh GridSiteSync')
-
 
 if __name__ == "__main__":
     try:
@@ -238,7 +241,7 @@ if __name__ == "__main__":
         refresh_cloudsite()
         refresh_gridsitesync()
 
-    except DatabaseError as db_err:
+    except Exception as db_err:
         log.exception(f"Database error: {db_err}")
 
     else:
